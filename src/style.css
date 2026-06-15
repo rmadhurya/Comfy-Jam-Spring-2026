@@ -307,3 +307,6 @@ html:has(.page-game) { background: #000; }
   opacity: 0.75;
   font-style: italic;
 }
+
+/* won content sits above fireworks canvas */
+.won-content { position: relative; z-index: 1; }
