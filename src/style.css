@@ -1,0 +1,309 @@
+/* ── RESET ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --sand:    #f2d98a;
+  --sand-dk: #c9a84c;
+  --ocean:   #2a8fc7;
+  --sky:     #87ceeb;
+  --brown:   #6b3e1e;
+  --white:   #fffef8;
+  --shadow:  0 8px 32px rgba(0,0,0,0.18);
+  --radius:  14px;
+  font-family: system-ui, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body { min-height: 100svh; overflow: hidden; }
+
+/* ── PREVENT WHITE FLASH ON PAGE LOAD ───────────────────────────────────── */
+html {
+  background: linear-gradient(
+    160deg,
+    #87ceeb 0%,
+    #b8e4f7 40%,
+    #f2d98a 70%,
+    #c9a84c 100%
+  );
+}
+html:has(.page-game) { background: #000; }
+
+/* ── HOME + INSTRUCTIONS + QUEST + WON shared background ────────────────── */
+.page-home,
+.page-instructions,
+.page-quest,
+.page-won {
+  background: linear-gradient(
+    160deg,
+    #87ceeb 0%,
+    #b8e4f7 40%,
+    #f2d98a 70%,
+    #c9a84c 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── CENTERED CARD ───────────────────────────────────────────────────────── */
+.screen-center {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  animation: floatIn 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes floatIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── HOME SCREEN ─────────────────────────────────────────────────────────── */
+.eyebrow {
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--brown);
+  opacity: 0.65;
+}
+
+.game-title {
+  font-size: clamp(56px, 10vw, 100px);
+  font-weight: 900;
+  letter-spacing: -3px;
+  color: var(--brown);
+  text-shadow: 0 2px 0 rgba(255,255,255,0.5), 0 6px 24px rgba(0,0,0,0.1);
+  line-height: 1;
+}
+
+.subtitle {
+  font-size: 18px;
+  color: var(--brown);
+  opacity: 0.65;
+  font-style: italic;
+}
+
+/* ── INSTRUCTIONS SCREEN ─────────────────────────────────────────────────── */
+.instructions-title {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--brown);
+  letter-spacing: -0.5px;
+}
+
+.instructions-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+  background: rgba(255,255,255,0.45);
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius);
+  padding: 28px 36px;
+  max-width: 420px;
+  width: 90vw;
+}
+
+.instructions-list li {
+  font-size: 16px;
+  color: var(--brown);
+  line-height: 1.5;
+}
+
+.instructions-list strong { color: #3d1f06; }
+
+/* ── BUTTONS ─────────────────────────────────────────────────────────────── */
+.button-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.btn {
+  display: inline-block;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-weight: 700;
+  padding: 14px 32px;
+  letter-spacing: 0.02em;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btn:hover  { transform: translateY(-2px); box-shadow: var(--shadow); }
+.btn:active { transform: translateY(0);    box-shadow: none; }
+
+.btn-primary {
+  background: var(--brown);
+  color: var(--white);
+}
+
+.btn-secondary {
+  background: rgba(255,255,255,0.4);
+  color: var(--brown);
+  border: 2px solid rgba(107,62,30,0.25);
+  backdrop-filter: blur(8px);
+}
+
+/* ── GAME PAGE ───────────────────────────────────────────────────────────── */
+.page-game { background: #000; }
+
+#game-container {
+  position: fixed;
+  inset: 0;
+}
+
+#renderCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+  outline: none;
+}
+
+/* ── HUD ─────────────────────────────────────────────────────────────────── */
+#ui {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 10px 22px;
+  border-radius: 999px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ── CURTAIN ─────────────────────────────────────────────────────────────── */
+#curtain {
+  position: fixed;
+  inset: 0;
+  background: var(--brown);
+  z-index: 20;
+  transform: translateY(0);
+  pointer-events: none;
+}
+
+#curtain.wipe-out {
+  animation: curtainUp 0.8s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+
+@keyframes curtainUp {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-100%); }
+}
+
+/* ── SPLASH ──────────────────────────────────────────────────────────────── */
+#splash {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 21;
+  pointer-events: none;
+}
+
+#splash-text {
+  color: var(--white);
+  font-size: clamp(20px, 3.5vw, 30px);
+  font-weight: 700;
+  font-style: italic;
+  text-align: center;
+  max-width: 560px;
+  padding: 0 32px;
+  line-height: 1.5;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+#splash-text.visible { opacity: 1; transform: translateY(0); }
+#splash.hidden { display: none; }
+
+/* ── QUEST PAGE ──────────────────────────────────────────────────────────── */
+#quest-card {
+  position: relative;
+  background: var(--white);
+  border-radius: 20px;
+  padding: 40px 44px 36px;
+  max-width: 420px;
+  width: 90vw;
+  text-align: center;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  animation: cardIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+#quest-dismiss {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #bbb;
+  text-decoration: none;
+  border-radius: 50%;
+  transition: background 0.15s, color 0.15s;
+  line-height: 1;
+}
+#quest-dismiss:hover { background: #f0f0f0; color: #888; }
+
+#quest-icon { font-size: 52px; line-height: 1; }
+
+#quest-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #b8860b;
+}
+
+#quest-body {
+  font-size: 17px;
+  color: var(--brown);
+  line-height: 1.6;
+}
+
+#quest-body strong { color: #3d1f06; }
+
+/* ── WON PAGE ────────────────────────────────────────────────────────────── */
+.won-content { max-width: 480px; width: 90vw; }
+
+.won-title {
+  font-size: clamp(48px, 10vw, 80px);
+  font-weight: 900;
+  letter-spacing: -2px;
+  color: var(--brown);
+  line-height: 1;
+}
+
+.won-body {
+  font-size: 20px;
+  color: var(--brown);
+  opacity: 0.75;
+  font-style: italic;
+}
